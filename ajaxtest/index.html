@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AJAX Test</title>
+</head>
+<body>
+    <div id="main">
+        <p>Original Text</p>
+    </div>
+
+    <button id="ajax-button" type="button">Update Content with AJAX</button>
+
+    <button id="ajax-test-button" type="button">See if AJAX Request</button>
+
+    <button id="new-content-button" type="button">Add a Heading</button>
+
+    <button id="json-button" type="button">Get JSON</button>
+
+    <div id="form"> 
+        <p>Which category?</p>
+        <select id="category-select">
+            <option disabled selected>Please Select</option>
+            <option value="1">Furniture</option>
+            <option value="2">Lighting</option>
+        </select>
+        <select id="subcategory-select">
+        </select>
+    </div>
+    <script>
+        function replaceText() {
+            var target = document.getElementById("main");
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'sample.txt', true);
+            xhr.onreadystatechange = function() {
+                console.log("Current readyState: " + xhr.readyState);
+                if(xhr.readyState == 2) {
+                    target.innerHTML = 'Loading...';
+                } 
+                if(xhr.readyState == 4 && xhr.status == 200) {
+                    target.innerHTML = xhr.responseText;
+                }
+                if(xhr.status == 404) {
+                    target.innerHTML = "FILE NOT FOUND";
+                }
+            }
+            xhr.send();
+        }
+
+        function checkAjax() {
+            var target = document.getElementById("main");
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'isajax.php', true);
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            xhr.onreadystatechange = function() {
+                console.log("Current readyState: " + xhr.readyState);
+                if(xhr.readyState == 2) {
+                    target.innerHTML = 'Loading...';
+                } 
+                if(xhr.readyState == 4 && xhr.status == 200) {
+                    target.innerHTML = xhr.responseText;
+                }
+                if(xhr.status == 404) {
+                    target.innerHTML = "FILE NOT FOUND";
+                }
+            }
+            xhr.send();
+        }
+
+        function addHeading() {
+            var target = document.getElementById("main");
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'new_content.php', true);
+            xhr.onreadystatechange = function() {
+                console.log("Current readyState: " + xhr.readyState);
+                if(xhr.readyState == 2) {
+                    target.innerHTML = 'Loading...';
+                } 
+                if(xhr.readyState == 4 && xhr.status == 200) {
+                    target.innerHTML = xhr.responseText;
+                }
+                if(xhr.status == 404) {
+                    target.innerHTML = "FILE NOT FOUND";
+                }
+            }
+            xhr.send();
+        }
+
+        function getJSON() {
+            var target = document.getElementById("main");
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'json.php', true);
+            xhr.onreadystatechange = function() {
+                console.log("Current readyState: " + xhr.readyState);
+                if(xhr.readyState == 2) {
+                    target.innerHTML = 'Loading...';
+                } 
+                if(xhr.readyState == 4 && xhr.status == 200) {
+                    target.innerHTML = "";
+                    var jsonData = JSON.parse(xhr.responseText);
+                    for(let item in jsonData) {
+                        target.innerHTML += item + " contains " + jsonData[item] + "<br>";
+                    }
+                }
+                if(xhr.status == 404) {
+                    target.innerHTML = "FILE NOT FOUND";
+                }
+            }
+            xhr.send();
+        }
+        
+        function updateSubcategories() {
+            var cat_select = document.getElementById("category-select");
+            var subcat_select = document.getElementById("subcategory-select");
+
+            var cat_id = cat_select.options[cat_select.selectedIndex].value;
+
+            var url = 'subcategories.php?category_id=' + cat_id;
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.onreadystatechange = function() {
+                if(xhr.readyState == 4 && xhr.status == 200) {
+                    subcat_select.innerHTML = xhr.responseText;
+                }
+            }
+            xhr.send();
+        }
+
+        var cat_select = document.getElementById("category-select");
+        cat_select.addEventListener("change", updateSubcategories);
+
+        var button = document.getElementById("ajax-button");
+        button.addEventListener("click", replaceText);
+
+        var testAjaxButton = document.getElementById("ajax-test-button");
+        testAjaxButton.addEventListener("click", checkAjax);
+
+        var headingButton = document.getElementById("new-content-button");
+        headingButton.addEventListener("click", addHeading);
+
+        var jsonButton = document.getElementById("json-button");
+        jsonButton.addEventListener("click", getJSON);
+    </script>
+</body>
+</html>
